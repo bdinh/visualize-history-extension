@@ -1,0 +1,82 @@
+body {
+    background: #ffffff;
+    font-family: "Roboto";
+}
+
+.form-control {
+    /*border-radius: 0;*/
+}
+
+.calendar-view {
+    /*border: black 1px solid;*/
+    height: 250px;
+    /*width: 400px;*/
+}
+
+.App, #root {
+    width: 400px;
+    height: 600px;
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+}
+
+#root {
+}
+
+.model-title {
+    text-align: center;
+    line-height: 48px;
+    font-size: 1.5em;
+    height: 48px;
+    background: #f9f9f9;
+    /*box-shadow:0px 1px 1px #000000;*/
+
+}
+
+.line {
+    margin: 0.5em;
+}
+
+.day {
+    stroke: #fff;
+}
+
+.toolTip {
+    pointer-events: none;
+    position: absolute;
+    display: none;
+    min-width: 50px;
+    height: auto;
+    background: none repeat scroll 0 0 #ffffff;
+    padding: 0.5em;
+    border-radius: 5px;
+    text-align: center;
+    /*line-height: 1.3;*/
+    color: #5B6770;
+    box-shadow: 0px 3px 9px rgba(0, 0, 0, .15);
+    opacity: .8;
+    font-size: 1em;
+}
+/*.toolTip:after {*/
+    /*content: "";*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*border-left: 12px solid transparent;*/
+    /*border-right: 12px solid transparent;*/
+    /*border-top: 12px solid white;*/
+    /*position: absolute;*/
+    /*bottom: -10px;*/
+    /*left: 50%;*/
+    /*margin-left: -12px;*/
+/*}*/
+.toolTip span {
+    /*font-weight: 500;*/
+    color: #081F2C;
+}
+
+.hover-date {
+    color: #002b53;
+}
