@@ -3,26 +3,11 @@ import './App.css';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 import * as moment from 'moment';
-
-
-interface RawHistoryData {
-    id: string,
-    lastVisitTime: number,
-    title: string,
-    typedCount: number,
-    url: string,
-    visitCount: number,
-}
-
-interface PlotDate {
-    date: string,
-    value: number,
-}
-
-interface Test {
-    baseURL: null|string;
-    data: null|RawHistoryData[],
-}
+import {
+    dateToString, weekNumberFormatting, formatDateCountArray, getAllDatesArray, getYearRange,
+    getDateCountDictionary, getMonthRange
+} from "./ts/utils";
+import { Test, RawHistoryData, DateCount } from "./ts/interface";
 
 class App extends React.Component<{}, Test> {
     constructor(props) {
@@ -37,133 +22,62 @@ class App extends React.Component<{}, Test> {
     componentDidMount() {
         chrome.tabs.query({'active': true,  'currentWindow' : true}, (tabs) => {
             let currentURL = tabs[0].url as string;
-            console.log(currentURL);
-
             let pathArray = currentURL.split( '/' );
             let protocol = pathArray[0];
             let host = pathArray[2];
             let urlString = protocol + '//' + host + '/';
-
             chrome.history.search({
                 'text': urlString,
                 'maxResults': 1000000,
                 'startTime': 0
             },  (results: RawHistoryData[]) => {
-                console.log(urlString);
-                console.log(results);
                 this.setState({
                     baseURL: host,
                     data: results
                 })
             });
         });
-        // chrome.topSites.get((sites) => {
-        //     let url = sites[0].url;
-        //     console.log(url);
-        //
-        //     chrome.history.search({
-        //         'text': url,
-        //         'maxResults': 1000000,
-        //         'startTime': 0
-        //     },  (results) => {
-        //
-        //     });
-        //
-        //     chrome.history.getVisits({ 'url': url}, (sites) => {
-        //         console.log(sites);
-        //     })
-        // });
     }
 
     createCalendarView() {
         let data :RawHistoryData[] = this.state.data as RawHistoryData[];
+
+        console.log(data);
         let day = d3.timeFormat("%w");
         let week = d3.timeFormat("%U");
         // let percent = d3.format(".1%");
         let format = d3.timeFormat("%Y%m%d");
         let parseDate = d3.timeParse("%Y%m%d");
 
-        let dictionary = {};
-        let yearRange :number[] = [];
-        let monthRange :number[] = [];
 
         let startDate: Date = new Date(data[data.length - 1].lastVisitTime);
-        let startDateString :string = this.dateToString(startDate);
+        let startDateString :string = dateToString(startDate);
         startDate = parseDate(startDateString);
         let endDate: Date = new Date(data[0].lastVisitTime);
-        let endDateString :string = this.dateToString(endDate);
+        let endDateString :string = dateToString(endDate);
         endDate = parseDate(endDateString);
 
-        data.forEach((datum: RawHistoryData) => {
-            let convertedDate = new Date(datum.lastVisitTime);
-            // TODO: Semi redundant
-            let year = convertedDate.getFullYear();
-            !(yearRange.indexOf(year) > -1) ? yearRange.push(year) : "";
-            let result = this.dateToString(convertedDate);
+        let dictionary = getDateCountDictionary(data);
+        let yearRange :number[] = getYearRange(startDate, endDate);
+        let monthRange :number[] = getMonthRange(startDate, endDate, dictionary);
 
-            if (dictionary[result] !== undefined) {
-                dictionary[result] = dictionary[result] + datum.visitCount;
-            } else {
-                dictionary[result] = datum.visitCount;
-            }
-        });
+        // let startMonthValue = startDate.getMonth();
+        // while (startMonthValue !== endDate.getMonth() + 1) {
+        //     monthRange.push(startMonthValue);
+        //     startMonthValue = (startMonthValue + 1) % 12;
+        // }
+        // // yearRange.reverse();
+        // //
+        // if (Object.keys(dictionary).length < 28 * monthRange.length) {
+        //     // remove the first month in array due to the fact that we may not have enough data on it
+        //     // needs fixing in order to count for distribution but should always work with chrome data
+        //     monthRange.splice(monthRange.length - 1, 1);
+        // }
 
-        console.log(dictionary);
-        let startMonthValue = startDate.getMonth();
-        while (startMonthValue !== endDate.getMonth() + 1) {
-            monthRange.push(startMonthValue);
-            startMonthValue = (startMonthValue + 1) % 12;
-        }
-        yearRange.reverse();
+        let rectData :Date[] = getAllDatesArray(startDate, endDate);
 
-        if (Object.keys(dictionary).length < 28 * monthRange.length) {
-            // remove the first month in array due to the fact that we may not have enough data on it
-            // needs fixing in order to count for distribution but should always work with chrome data
-            monthRange.splice(monthRange.length - 1, 1);
-        }
 
-        let dateKeys = Object.keys(dictionary);
-        let startWeek = Number(week(startDate));
-        let endWeek = Number(week(endDate));
-        let totalWeeks = 52 - startWeek + 1 + endWeek + 1;
-        console.log(totalWeeks);
-
-        let rectData :Date[] = [];
-        let currentDate :Date = parseDate(dateKeys[0]);
-        while (currentDate <= endDate) {
-            rectData.push(new Date(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        let currentDate2 :Date = new Date(startDate as Date);
-        console.log(currentDate2);
-        for (let i = startDate.getDay(); i > 0; i--) {
-            currentDate2.setDate(currentDate2.getDate() - 1);
-            rectData.push(new Date(currentDate2));
-        }
-
-        let currentDate3 = new Date(endDate);
-        for (let i = endDate.getDay(); i < 6; i++) {
-            currentDate3.setDate(currentDate3.getDate() + 1);
-            rectData.push(new Date(currentDate3));
-        }
-
-        let plottingData :PlotDate[] = [];
-        rectData.forEach((date) => {
-            let year = date.getFullYear();
-            let month = this.handleMonthFormatting(date.getMonth() + 1);
-            let day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
-            let result = String(year) + month + day;
-
-            let newObject: PlotDate = {} as PlotDate;
-            newObject.date = result;
-            let visitCount = 0;
-            if (dictionary[result] !== undefined) {
-                visitCount = dictionary[result];
-            }
-            newObject.value = visitCount;
-            plottingData.push(newObject);
-        });
+        let dateCountArray :DateCount[] = formatDateCountArray(rectData, dictionary);
 
         let width = $('.calendar-view').width();
         let height = 200;
@@ -176,14 +90,9 @@ class App extends React.Component<{}, Test> {
             monthFormat.push(month[index])
         });
 
-
-        // let color = d3.scaleLinear()
-        //     .domain([0, 1])
-        //     .range(['#d1d0db', '#443266']);
-
         let color = d3.scaleLinear()
             .domain([0, 1])
-            .range(['#e5e9ed', '#002b53']);
+            .range(['#e5e9ed', '#002b51']);
 
 
         let svg = d3.select(".calendar-view").selectAll("svg")
@@ -218,10 +127,12 @@ class App extends React.Component<{}, Test> {
             .attr("class", "day")
             .attr("width", cellSize)
             .attr("height", cellSize)
-            .attr("x", (d) => { return rectWeekFormatting(week(startDate), Number(week(d))) * cellSize; })
+            .attr("x", (d) => { return weekNumberFormatting(week(startDate), Number(week(d))) * cellSize; })
             .attr("y", (d) => { return day(d) * cellSize; })
             .attr("fill",'#ebedf0')
             .datum(format);
+
+        console.log(rect);
 
         let legend = svg.selectAll(".legend")
             .data(monthFormat)
@@ -236,29 +147,18 @@ class App extends React.Component<{}, Test> {
             .attr("dy", "-.3em")
             .text(function(d,i){ return monthFormat[i] });
 
-        let maxVisitCount = d3.max(plottingData, (d) => { return d.value});
-
+        let maxVisitCount = d3.max(dateCountArray, (d) => { return d.value});
         let preppedData :Object= d3.nest()
             .key((d) => { return d.date; })
             .rollup((d) => { return Math.sqrt(d[0].value / maxVisitCount); })
-            .map(plottingData);
+            .map(dateCountArray);
 
-        let zeroData = {};
-        let valueData = {};
-        for (let key in preppedData) {
-            if (preppedData[key] === 0) {
-                zeroData[key] = preppedData[key];
-            } else {
-                valueData[key] = preppedData[key];
-            }
-        }
 
         let tooltip = d3.select("body").append("div").attr("class", "toolTip");
-
-
+        console.log(preppedData);
+        console.log(dictionary);
         rect.filter(function(d) { return preppedData["$" + d] >= 0 })
             .attr("fill", function(d) { return color(preppedData["$" + d]); })
-            // .attr("data-title", function(d) { return moment(d).format('MMM Do, YYYY') + " \nvalue : "+Math.round(valueData["$" + d]*100) + "\n"})
             .on('mouseover', (d) => {
                 d3.select(d3.event.path[0])
                     .style('stroke', 'black');
@@ -285,36 +185,10 @@ class App extends React.Component<{}, Test> {
                 tooltip
                     .style('display', 'none');
             });
-
-
-        function rectWeekFormatting(startWeek, currentWeek) {
-            if (currentWeek >= startWeek) {
-                return currentWeek - (startWeek);
-            } else {
-                if (currentWeek === 0) {
-                    return 52 - startWeek; // connect the last week with the first week
-                }
-                return currentWeek + (52 - startWeek);
-            }
-        }
     }
 
-    dateToString(date) {
-        let year = date.getFullYear();
-        let month = this.handleMonthFormatting(date.getMonth() + 1);
-        let day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
-        return String(year) + month + day;
-    }
-
-
-    handleMonthFormatting(month) {
-        if(month === 0) {
-            return String(12);
-        } else if (month <= 9) {
-            return "0" + month;
-        } else {
-            return month;
-        }
+    handleClick() {
+        console.log("hellllooooo");
     }
 
     render() {
@@ -323,9 +197,21 @@ class App extends React.Component<{}, Test> {
         return (
             <div className="App">
                 <div className="model-title">
-                    <p>
-                        History Visualizer
-                    </p>
+                    <div className="row">
+                        <div className="col-6">
+                            <p>
+                                History Visualizer
+                            </p>
+                        </div>
+                        <div className="col-6">
+                            <button
+                                className="button all-history-button"
+                                onClick={this.handleClick}
+                            >
+                                View All
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <hr className="line"/>
                 <div className="container">
@@ -347,6 +233,7 @@ class App extends React.Component<{}, Test> {
                     <hr className="line"/>
 
                 </div>
+
              </div>
         );
     }

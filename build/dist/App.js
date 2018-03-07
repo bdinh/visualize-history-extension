@@ -13,6 +13,7 @@ import './App.css';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 import * as moment from 'moment';
+import { dateToString, weekNumberFormatting, formatDateCountArray, getAllDatesArray, getYearRange, getDateCountDictionary, getMonthRange } from "./ts/utils";
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App(props) {
@@ -28,7 +29,6 @@ var App = /** @class */ (function (_super) {
         var _this = this;
         chrome.tabs.query({ 'active': true, 'currentWindow': true }, function (tabs) {
             var currentURL = tabs[0].url;
-            console.log(currentURL);
             var pathArray = currentURL.split('/');
             var protocol = pathArray[0];
             var host = pathArray[2];
@@ -38,110 +38,44 @@ var App = /** @class */ (function (_super) {
                 'maxResults': 1000000,
                 'startTime': 0
             }, function (results) {
-                console.log(urlString);
-                console.log(results);
                 _this.setState({
                     baseURL: host,
                     data: results
                 });
             });
         });
-        // chrome.topSites.get((sites) => {
-        //     let url = sites[0].url;
-        //     console.log(url);
-        //
-        //     chrome.history.search({
-        //         'text': url,
-        //         'maxResults': 1000000,
-        //         'startTime': 0
-        //     },  (results) => {
-        //
-        //     });
-        //
-        //     chrome.history.getVisits({ 'url': url}, (sites) => {
-        //         console.log(sites);
-        //     })
-        // });
     };
     App.prototype.createCalendarView = function () {
-        var _this = this;
         var data = this.state.data;
+        console.log(data);
         var day = d3.timeFormat("%w");
         var week = d3.timeFormat("%U");
         // let percent = d3.format(".1%");
         var format = d3.timeFormat("%Y%m%d");
         var parseDate = d3.timeParse("%Y%m%d");
-        var dictionary = {};
-        var yearRange = [];
-        var monthRange = [];
         var startDate = new Date(data[data.length - 1].lastVisitTime);
-        var startDateString = this.dateToString(startDate);
+        var startDateString = dateToString(startDate);
         startDate = parseDate(startDateString);
         var endDate = new Date(data[0].lastVisitTime);
-        var endDateString = this.dateToString(endDate);
+        var endDateString = dateToString(endDate);
         endDate = parseDate(endDateString);
-        data.forEach(function (datum) {
-            var convertedDate = new Date(datum.lastVisitTime);
-            // TODO: Semi redundant
-            var year = convertedDate.getFullYear();
-            !(yearRange.indexOf(year) > -1) ? yearRange.push(year) : "";
-            var result = _this.dateToString(convertedDate);
-            if (dictionary[result] !== undefined) {
-                dictionary[result] = dictionary[result] + datum.visitCount;
-            }
-            else {
-                dictionary[result] = datum.visitCount;
-            }
-        });
-        console.log(dictionary);
-        var startMonthValue = startDate.getMonth();
-        while (startMonthValue !== endDate.getMonth() + 1) {
-            monthRange.push(startMonthValue);
-            startMonthValue = (startMonthValue + 1) % 12;
-        }
-        yearRange.reverse();
-        if (Object.keys(dictionary).length < 28 * monthRange.length) {
-            // remove the first month in array due to the fact that we may not have enough data on it
-            // needs fixing in order to count for distribution but should always work with chrome data
-            monthRange.splice(monthRange.length - 1, 1);
-        }
-        var dateKeys = Object.keys(dictionary);
-        var startWeek = Number(week(startDate));
-        var endWeek = Number(week(endDate));
-        var totalWeeks = 52 - startWeek + 1 + endWeek + 1;
-        console.log(totalWeeks);
-        var rectData = [];
-        var currentDate = parseDate(dateKeys[0]);
-        while (currentDate <= endDate) {
-            rectData.push(new Date(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        var currentDate2 = new Date(startDate);
-        console.log(currentDate2);
-        for (var i = startDate.getDay(); i > 0; i--) {
-            currentDate2.setDate(currentDate2.getDate() - 1);
-            rectData.push(new Date(currentDate2));
-        }
-        var currentDate3 = new Date(endDate);
-        for (var i = endDate.getDay(); i < 6; i++) {
-            currentDate3.setDate(currentDate3.getDate() + 1);
-            rectData.push(new Date(currentDate3));
-        }
-        var plottingData = [];
-        rectData.forEach(function (date) {
-            var year = date.getFullYear();
-            var month = _this.handleMonthFormatting(date.getMonth() + 1);
-            var day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
-            var result = String(year) + month + day;
-            var newObject = {};
-            newObject.date = result;
-            var visitCount = 0;
-            if (dictionary[result] !== undefined) {
-                visitCount = dictionary[result];
-            }
-            newObject.value = visitCount;
-            plottingData.push(newObject);
-        });
+        var dictionary = getDateCountDictionary(data);
+        var yearRange = getYearRange(startDate, endDate);
+        var monthRange = getMonthRange(startDate, endDate, dictionary);
+        // let startMonthValue = startDate.getMonth();
+        // while (startMonthValue !== endDate.getMonth() + 1) {
+        //     monthRange.push(startMonthValue);
+        //     startMonthValue = (startMonthValue + 1) % 12;
+        // }
+        // // yearRange.reverse();
+        // //
+        // if (Object.keys(dictionary).length < 28 * monthRange.length) {
+        //     // remove the first month in array due to the fact that we may not have enough data on it
+        //     // needs fixing in order to count for distribution but should always work with chrome data
+        //     monthRange.splice(monthRange.length - 1, 1);
+        // }
+        var rectData = getAllDatesArray(startDate, endDate);
+        var dateCountArray = formatDateCountArray(rectData, dictionary);
         var width = $('.calendar-view').width();
         var height = 200;
         var cellSize = 20;
@@ -151,12 +85,9 @@ var App = /** @class */ (function (_super) {
         monthRange.forEach(function (index) {
             monthFormat.push(month[index]);
         });
-        // let color = d3.scaleLinear()
-        //     .domain([0, 1])
-        //     .range(['#d1d0db', '#443266']);
         var color = d3.scaleLinear()
             .domain([0, 1])
-            .range(['#e5e9ed', '#002b53']);
+            .range(['#e5e9ed', '#002b51']);
         var svg = d3.select(".calendar-view").selectAll("svg")
             .data(d3.range(yearRange[0], yearRange[yearRange.length - 1]))
             .enter().append("svg")
@@ -188,10 +119,11 @@ var App = /** @class */ (function (_super) {
             .attr("class", "day")
             .attr("width", cellSize)
             .attr("height", cellSize)
-            .attr("x", function (d) { return rectWeekFormatting(week(startDate), Number(week(d))) * cellSize; })
+            .attr("x", function (d) { return weekNumberFormatting(week(startDate), Number(week(d))) * cellSize; })
             .attr("y", function (d) { return day(d) * cellSize; })
             .attr("fill", '#ebedf0')
             .datum(format);
+        console.log(rect);
         var legend = svg.selectAll(".legend")
             .data(monthFormat)
             .enter().append("g")
@@ -203,22 +135,14 @@ var App = /** @class */ (function (_super) {
             .style("font-size", "1em")
             .attr("dy", "-.3em")
             .text(function (d, i) { return monthFormat[i]; });
-        var maxVisitCount = d3.max(plottingData, function (d) { return d.value; });
+        var maxVisitCount = d3.max(dateCountArray, function (d) { return d.value; });
         var preppedData = d3.nest()
             .key(function (d) { return d.date; })
             .rollup(function (d) { return Math.sqrt(d[0].value / maxVisitCount); })
-            .map(plottingData);
-        var zeroData = {};
-        var valueData = {};
-        for (var key in preppedData) {
-            if (preppedData[key] === 0) {
-                zeroData[key] = preppedData[key];
-            }
-            else {
-                valueData[key] = preppedData[key];
-            }
-        }
+            .map(dateCountArray);
         var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+        console.log(preppedData);
+        console.log(dictionary);
         rect.filter(function (d) { return preppedData["$" + d] >= 0; })
             .attr("fill", function (d) { return color(preppedData["$" + d]); })
             .on('mouseover', function (d) {
@@ -246,34 +170,9 @@ var App = /** @class */ (function (_super) {
             tooltip
                 .style('display', 'none');
         });
-        function rectWeekFormatting(startWeek, currentWeek) {
-            if (currentWeek >= startWeek) {
-                return currentWeek - (startWeek);
-            }
-            else {
-                if (currentWeek === 0) {
-                    return 52 - startWeek; // connect the last week with the first week
-                }
-                return currentWeek + (52 - startWeek);
-            }
-        }
     };
-    App.prototype.dateToString = function (date) {
-        var year = date.getFullYear();
-        var month = this.handleMonthFormatting(date.getMonth() + 1);
-        var day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
-        return String(year) + month + day;
-    };
-    App.prototype.handleMonthFormatting = function (month) {
-        if (month === 0) {
-            return String(12);
-        }
-        else if (month <= 9) {
-            return "0" + month;
-        }
-        else {
-            return month;
-        }
+    App.prototype.handleClick = function () {
+        console.log("hellllooooo");
     };
     App.prototype.render = function () {
         {
@@ -281,7 +180,11 @@ var App = /** @class */ (function (_super) {
         }
         return (React.createElement("div", { className: "App" },
             React.createElement("div", { className: "model-title" },
-                React.createElement("p", null, "History Visualizer")),
+                React.createElement("div", { className: "row" },
+                    React.createElement("div", { className: "col-6" },
+                        React.createElement("p", null, "History Visualizer")),
+                    React.createElement("div", { className: "col-6" },
+                        React.createElement("button", { className: "button all-history-button", onClick: this.handleClick }, "View All")))),
             React.createElement("hr", { className: "line" }),
             React.createElement("div", { className: "container" },
                 React.createElement("div", { className: "form-group" },
