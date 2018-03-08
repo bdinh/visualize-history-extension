@@ -1,4 +1,4 @@
-export interface RawHistoryData {
+export interface HistoryData {
     id: string,
     lastVisitTime: number,
     title: string,
@@ -12,7 +12,19 @@ export interface DateCount {
     value: number,
 }
 
-export interface Test {
+export interface AppState {
     baseURL: null|string;
-    data: null|RawHistoryData[],
+    data: null|HistoryData[],
 }
+
+export interface DashBoardState {
+    searchTerm: string | null,
+    data: HistoryData[],
+    selected: string,
+    maxShow: number
+}
+
+export interface DashBoardProp {
+    query: any
+}
+

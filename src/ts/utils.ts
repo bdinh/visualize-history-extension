@@ -1,4 +1,4 @@
-import {DateCount, RawHistoryData} from "./interface";
+import {DateCount, HistoryData} from "./interface";
 
 const WEEKDAYS: number = 7;
 
@@ -72,9 +72,9 @@ export function getAllDatesArray(startDate: Date, endDate: Date) :Date[] {
     return allDatesArray;
 }
 
-export function getDateCountDictionary(rawData: RawHistoryData[]) :{} {
+export function getDateCountDictionary(rawData: HistoryData[]) :{} {
     let dateCountDictionary = {};
-    rawData.forEach((datum: RawHistoryData) => {
+    rawData.forEach((datum: HistoryData) => {
         let visitTimeDate = new Date(datum.lastVisitTime);
         let result = dateToString(visitTimeDate);
 
@@ -119,5 +119,31 @@ export function getMonthRange(startDate: Date, endDate: Date, dateCountDictionar
     }
 
     return monthRange;
+}
+
+export function getMonthArray(monthRange: number[]) :string[] {
+    let month: string[] = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let monthStringArray :string[] = [];
+    monthRange.forEach((index) => {
+        monthStringArray.push(month[index])
+    });
+    return monthStringArray;
+}
+
+
+export function getHistoryFromDate(date: Date, data: HistoryData[]) :HistoryData[] {
+    let result: HistoryData[] = [];
+    if (date !== null) {
+        let dateStart: Date = new Date(date);
+        let dateEnd: Date = new Date(date.setDate(date.getDate() + 1));
+        result = data.filter((historyItem: HistoryData) => {
+            let itemDate: Date = new Date(historyItem.lastVisitTime);
+            // console.log(date < itemDate);
+            // console.log(itemDate < dateEnd);
+            return (dateStart < itemDate && itemDate < dateEnd)
+        });
+        return result;
+    }
+    return result;
 
 }

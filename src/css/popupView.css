@@ -1,0 +1,72 @@
+body {
+    background: #ffffff;
+    font-family: "Roboto";
+}
+
+.App, #root {
+    width: 400px;
+}
+
+.container {
+    width: 100%;
+}
+
+.col-6 {
+    text-align: center;
+}
+
+
+.button:focus {
+    outline: none!important;
+}
+
+.all-history-button {
+    width: 50%;
+    line-height: 1.5em;
+    border: 2px #002b51 solid;
+    background: #f9f9f9;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.model-title {
+    line-height: 48px;
+    font-size: 1em;
+    height: 48px;
+    color: #002b51;
+    background: #f9f9f9;
+    padding-left: 0.5em;
+}
+
+.line {
+    margin: 0.5em;
+}
+.day {
+    stroke: #fff;
+}
+
+
+/*.toolTip {*/
+    /*pointer-events: none;*/
+    /*position: absolute;*/
+    /*display: none;*/
+    /*min-width: 50px;*/
+    /*height: auto;*/
+    /*background: none repeat scroll 0 0 #ffffff;*/
+    /*padding: 0.5em;*/
+    /*border-radius: 5px;*/
+    /*text-align: center;*/
+    /*color: #5B6770;*/
+    /*box-shadow: 0px 3px 9px rgba(0, 0, 0, .15);*/
+    /*opacity: .8;*/
+    /*font-size: 1em;*/
+/*}*/
+
+/*.toolTip span {*/
+    /*color: #081F2C;*/
+/*}*/
+
+.hover-date {
+    color: #002b53;
+}
