@@ -28,3 +28,9 @@ export interface DashBoardProp {
     query: any
 }
 
+export interface SummaryData {
+    totalVisit: number,
+    weeklyVisit: number,
+    monthlyVisit: number
+}
+

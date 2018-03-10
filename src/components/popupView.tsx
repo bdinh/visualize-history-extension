@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { createCalendarViewChart } from "../ts/calendarViewChart";
-import {HistoryData, AppState} from "../ts/interface";
+import {HistoryData, AppState, SummaryData} from "../ts/interface";
 import '../css/popupView.css';
+import {calculateTotalMonths, calculateVisitSummary} from "../ts/utils";
 
 
 export default class PopupView extends React.Component<{}, AppState> {
@@ -37,18 +38,23 @@ export default class PopupView extends React.Component<{}, AppState> {
 
     createCalendarView() {
         let data :HistoryData[] = this.state.data as HistoryData[];
+        console.log(calculateVisitSummary(data));
+        console.log(calculateTotalMonths(data));
         createCalendarViewChart(data, 200, 370, 20);
     }
 
     openTab() {
-        // let currentURL: string = window.location.href;
-        // let baseCurrentURL: string = currentURL.replace("index.html", "background.html");
         chrome.tabs.create({url: "background.html"});
     }
 
     render() {
-        console.log(window.location.href);
         {this.state.data !== null ? this.createCalendarView() : ""}
+
+        let summaryData: SummaryData | null = null;
+        if (this.state.data !== null) {
+            summaryData = calculateVisitSummary(this.state.data);
+        }
+
         return (
             <div>
                 <div className="model-title">
@@ -89,13 +95,13 @@ export default class PopupView extends React.Component<{}, AppState> {
                             Statistic:
                         </p>
                         <p>
-                            Total Visits in 3 Months: 999
+                            Total Visits in 3 Months: {summaryData !== null ?  summaryData.totalVisit: 0}
                         </p>
                         <p>
-                            Average Number of Visits Per Week: 999
+                            Average Number of Visits Per Week: {summaryData !== null ? summaryData.weeklyVisit : 0}
                         </p>
                         <p>
-                            Average Number of Visits Per Month: 999
+                            Average Number of Visits Per Month: {summaryData !== null ? summaryData.monthlyVisit : 0}
                         </p>
                     </div>
                 </div>

@@ -117,11 +117,6 @@ export default class HistoryDashView extends React.Component<any, DashBoardState
                                 Chrome History
                             </p>
                         </div>
-                        {/*<div>*/}
-                            {/*<p>*/}
-                                {/*Clear Browsing History*/}
-                            {/*</p>*/}
-                        {/*</div>*/}
                     </div>
                     <div className="visualization-dashboard col-9">
                         <div className="calendar-view-container"/>
