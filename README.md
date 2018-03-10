@@ -28,6 +28,7 @@ Once installed, the extension will visualize and create summary visualization
 in a popup that allows the user to quickly view their browsing habits given a base url.
 
 Below is an example of the extension in use:
+
 ![extension popup](./images/popup-view.png)
 
 
