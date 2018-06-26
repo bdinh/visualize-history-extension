@@ -3,8 +3,9 @@ body {
     font-family: "Roboto";
 }
 
+/* Remove later*/
 .App, #root {
-    width: 400px;
+    /*width: 400px;*/
 }
 
 .container {
@@ -69,4 +70,9 @@ body {
 
 .hover-date {
     color: #002b53;
+}
+
+
+.viz-1, .viz-2 {
+    display: inline-block;
 }

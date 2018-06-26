@@ -1,4 +1,5 @@
 import {DateCount, HistoryData, SummaryData } from "./interface";
+import {timeParse} from 'd3';
 
 const WEEKDAYS: number = 7;
 
@@ -180,4 +181,9 @@ export function calculateTotalWeek(data: HistoryData[]) :number {
     let endDate: Date = new Date(data[0].lastVisitTime);
     let allDatesArray: Date[] = getAllDatesArray(startDate, endDate);
     return Math.round(allDatesArray.length / 7);
+}
+
+export function parseDate(dateString: string) :Date {
+    let d3ParseDate = timeParse("%Y%m%d");
+    return d3ParseDate(dateString);
 }

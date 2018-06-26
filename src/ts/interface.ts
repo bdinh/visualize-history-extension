@@ -15,6 +15,12 @@ export interface DateCount {
 export interface AppState {
     baseURL: null|string;
     data: null|HistoryData[],
+    monthRange: number[],
+    yearRange: number[],
+    startDate: Date,
+    endDate: Date,
+    dictionary: {},
+    preppedData: {}
 }
 
 export interface DashBoardState {
@@ -32,5 +38,9 @@ export interface SummaryData {
     totalVisit: number,
     weeklyVisit: number,
     monthlyVisit: number
+}
+
+export interface PopupProps {
+    startongDate: string
 }
 

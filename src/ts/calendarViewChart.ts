@@ -5,6 +5,7 @@ import { weekNumberFormatting, formatDateCountArray, dateToString,
     getDateCountDictionary, getYearRange, getMonthRange, getAllDatesArray,
     getMonthArray } from "./utils";
 import {HistoryData, DateCount} from "./interface";
+// import {stringify} from "querystring";
 
 let day = d3.timeFormat("%w");
 let week = d3.timeFormat("%U");
@@ -121,7 +122,7 @@ export function drawLegend(svg: any, month: string[], cellSize: number) :void {
 }
 
 export function drawRectDataLayer(rect: any, preppedData: Object, dictionary: Object) :void {
-    rect.filter(function(d) { return preppedData["$" + d] >= 0 })
+    rect.filter(function(d) { return preppedData["$" + d] > 0 })
         .attr("fill", function(d) { return color(preppedData["$" + d]); })
         .on('mouseover', (d) => {
             let shift = 0;
