@@ -1,0 +1,32 @@
+#root {
+    height: 600px;
+    width: 400px;
+    background-color: #f5f5f5;
+}
+
+.top-navbar-container {
+    height: 64px;
+    background-color: #3367d6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.top-navbar-hamburger-icon {
+    padding-top: 0.75em;
+    padding-left: 0.5em;
+    color: #ffffff;
+    display: inline-block;
+}
+
+/*.top-navbar-hamburger-icon-container:hover {*/
+    /*cursor: pointer;*/
+/*}*/
+
+.top-navbar-title-container {
+    display: inline-block;
+}
+
+.top-navbar-title {
+    color: #ffffff;
+    padding-left: 1em;
+    padding-top: 1.33em;
+}

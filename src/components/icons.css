@@ -1,0 +1,14 @@
+.menu-icon-stroke {
+    width: 35px;
+    height: 5px;
+    background-color: black;
+    margin: 6px 0;
+}
+
+.menu-icon-stroke-1 {
+    margin-top: 0;
+}
+
+.menu-icon-container {
+    width: 35px;
+}

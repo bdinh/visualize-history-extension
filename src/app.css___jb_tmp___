@@ -1,0 +1,10 @@
+#root {
+    height: 600px;
+    width: 400px;
+    background-color: aquamarine;
+}
+
+.top-navbar-container {
+    background-color: black;
+    height: 1000px;
+}
