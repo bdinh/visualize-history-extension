@@ -5,7 +5,7 @@ import {
     ProfileOverviewProps,
     ProfilePictureProps
 } from "../types/props/profileOverview";
-import './profileOverview.css'
+import '../css/profileOverview.css'
 
 export class ProfileOverview extends React.Component<ProfileOverviewProps, any> {
 
@@ -47,7 +47,10 @@ class ProfilePicture extends React.Component<ProfilePictureProps, any> {
 
         return (
             <div className={"profile-picture-container"}>
-                <img  className={"side-navbar-profile-picture"} src={profilePictureSrc}/>
+                <div className={"profile-picture"}>
+
+                <img  className={"profile-picture-img"} src={profilePictureSrc}/>
+                </div>
             </div>
         );
     }

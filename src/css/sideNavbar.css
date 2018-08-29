@@ -1,0 +1,50 @@
+.side-navbar-container {
+    height: 600px;
+    width: 275px;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color:  #f5f5f5;
+    overflow: hidden;
+    transition: 0.5s;
+}
+
+.tab-item-container {
+    padding: 0.5em 1em 0.25em 1em;
+    color: #000;
+    /*border: fuchsia solid 1px;*/
+    /*height: 10%;*/
+    /*background-color: #f5f5f5;*/
+}
+
+.tab-item-icon {
+    color: #606060;
+}
+
+.tab-item-padding {
+    padding-top: 0.5em;
+}
+
+.tab-item-icon-container {
+    display: inline-flex;
+}
+
+.tab-item-label {
+    margin-left: 1.75em;
+    line-height: 1.75em;
+    font-size: 1em;
+
+}
+
+.tab-item-container:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.hr-greyed {
+    /*margin-left: 1em;*/
+    /*margin-right: 1em;*/
+    border: 0.5px solid #d8d8d8;
+}

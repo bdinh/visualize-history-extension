@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = require("react");
-require("./profileOverview.css");
+require("../css/profileOverview.css");
 class ProfileOverview extends React.Component {
     render() {
         const { avatarInitialsLabel, profilePictureSrc, profileEmail, profileName } = this.props;
@@ -18,7 +18,8 @@ class ProfilePicture extends React.Component {
     render() {
         const { profilePictureSrc } = this.props;
         return (React.createElement("div", { className: "profile-picture-container" },
-            React.createElement("img", { className: "side-navbar-profile-picture", src: profilePictureSrc })));
+            React.createElement("div", { className: "profile-picture" },
+                React.createElement("img", { className: "profile-picture-img", src: profilePictureSrc }))));
     }
 }
 class DefaultAvatar extends React.Component {

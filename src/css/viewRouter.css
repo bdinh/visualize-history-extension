@@ -1,0 +1,36 @@
+.view-container {
+    padding: 2em 2em;
+}
+
+.card-container {
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-radius: 5px;
+    margin-bottom: 2em;
+}
+
+.margin-top {
+    margin-top: 2em;
+}
+
+.card-label {
+    font-size: 0.75em;
+    padding: 0.5em;
+    text-transform: uppercase;
+    background-color: #3367d6;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #ffffff;
+}
+
+.card-content {
+    padding: 1em;
+}
+
+.card-content-label {
+    font-weight: bold;
+    display: inline;
+    position: relative;
+    bottom: 0.1em;
+    margin-left: 2em;
+}

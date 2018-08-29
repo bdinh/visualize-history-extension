@@ -1,0 +1,35 @@
+.profile-overview-container {
+    background-color:  #3367d6;
+    height: 20%;
+}
+
+.profile-name-container {
+    padding-left: 1em;
+    padding-top: 0.25em;
+    color: #ffffff;
+}
+
+.profile-picture-container, .default-avatar-container {
+    padding-left: 1em;
+    padding-top: 1em;
+}
+
+.avatar-container {
+    background-color: #244895;
+    color: #ffffff;
+    font-size: 2em;
+    padding-left: 0.5em;
+    padding-top: 0.35em;
+}
+
+.profile-email-container {
+    padding-left: 1.36em;
+    font-size: 0.75em;
+    color: #ffffff;
+}
+
+.profile-picture-img, .avatar-container, .profile-picture{
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
