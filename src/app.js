@@ -21,6 +21,7 @@ class App extends React.Component {
             let gitHubData = data["https://github.com/"];
             let testEntry = gitHubData.visits[0];
             console.log(new Date(testEntry.time).toLocaleString(["it-IT"], { hour: "2-digit", minute: "2-digit" }));
+            let plottingData = {};
         });
     }
     closeSideNavbarCallback(event) {

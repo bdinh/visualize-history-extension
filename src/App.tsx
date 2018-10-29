@@ -9,11 +9,12 @@ import {ViewRouter} from "./components/viewRouter";
 
 import './css/viewRouter.css';
 import HistoryItem = chrome.history.HistoryItem;
-import {HistoryDictionary, HistoryEntry, VisitEntry} from "./types/model";
+import {HistoryDictionary, HistoryEntry, VisitEntry } from "./types/model";
 import VisitItem = chrome.history.VisitItem;
 import {json, timeDay} from 'd3'
 import {timeParse} from "d3-time-format";
 import {XAxis, YAxis} from "./components/HourChart/axis";
+import {MinuteDictionary} from "./components/HourChart/types";
 
 export class App extends React.Component<any, AppState>  {
     constructor(props: any) {
@@ -29,10 +30,15 @@ export class App extends React.Component<any, AppState>  {
 
         json("./data/data.json", (data: HistoryDictionary) => {
             console.log(data["https://github.com/"])
-
             let gitHubData: HistoryEntry= data["https://github.com/"];
             let testEntry: VisitEntry = gitHubData.visits[0];
-            console.log(new Date(testEntry.time).toLocaleString(["it-IT"], {hour: "2-digit", minute: "2-digit"}))
+            console.log(new Date(testEntry.time).toLocaleString(["it-IT"], {hour: "2-digit", minute: "2-digit"}));
+
+            let plottingData: MinuteDictionary = {};
+            // gitHubData.visits.forEach((visit: VisitEntry) => {
+            //     let minuteKey: string = new Date(visit.time).toLocaleString(["it-IT"], {hour: "2-digit", minute: "2-digit"});
+            //     if (plottingData[minuteKey] !== undefined)
+            // })
 
 
         });
